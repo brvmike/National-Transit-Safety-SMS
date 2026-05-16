@@ -40,6 +40,11 @@ This repository demonstrates a scalable framework that allows mid-to-large-sized
 ## Local Installation & Execution
 To replicate this environment locally for independent review or regional adoption, please follow these steps:
 
+**0. 
+Download the latest Major Safety and Security Events file and the Agency Information master file from the Federal Transit Administration NTD Data Portal. Place both .csv files directly into the root directory of this project:
+https://data.transportation.gov/Public-Transit/Major-Safety-and-Security-Events/9ivb-8ae9/data_preview
+https://www.transit.dot.gov/ntd/data-product/2024-annual-database-agency-information
+
 **1. Clone the Repository**
 Bash:
 git clone [https://github.com/brvmike/National-Transit-Safety-SMS.git](https://github.com/brvmike/National-Transit-Safety-SMS.git)
