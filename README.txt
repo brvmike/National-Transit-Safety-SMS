@@ -40,3 +40,13 @@ This pipeline represents a complete transition from legacy, manual spreadsheet r
 
 ## 📊 Federal Compliance & Impact
 This repository demonstrates a scalable framework that allows mid-to-large-sized transit agencies to comply with federal data-driven safety mandates without requiring massive internal data engineering departments. It establishes a transparent, adoptable national standard for predictive transit safety.
+
+---
+
+## 💻 Local Installation & Execution
+To replicate this environment locally for independent review or regional adoption, follow these steps:
+
+**1. Clone the Repository**
+```bash
+git clone [https://github.com/brvmike/National-Transit-Safety-SMS.git](https://github.com/YourUsername/National-Transit-Safety-SMS.git)
+cd National-Transit-Safety-SMS
