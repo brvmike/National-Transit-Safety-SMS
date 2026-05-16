@@ -40,39 +40,37 @@ This repository demonstrates a scalable framework that allows mid-to-large-sized
 ## Local Installation & Execution
 To replicate this environment locally for independent review or regional adoption, please follow these steps:
 
-**0. 
-Download the latest Major Safety and Security Events file and the Agency Information master file from the Federal Transit Administration NTD Data Portal. Place both .csv files directly into the root directory of this project:
-https://data.transportation.gov/Public-Transit/Major-Safety-and-Security-Events/9ivb-8ae9/data_preview
-https://www.transit.dot.gov/ntd/data-product/2024-annual-database-agency-information
+**0. Acquire Raw Federal Data**
+Download the latest *Major Safety and Security Events* file and the *Agency Information* master file from the Federal Transit Administration NTD Data Portal. Place both `.csv` files directly into the root directory of this project:
+* [Major Safety and Security Events Data](https://data.transportation.gov/Public-Transit/Major-Safety-and-Security-Events/9ivb-8ae9/data_preview)
+* [2024 Annual Database Agency Information](https://www.transit.dot.gov/ntd/data-product/2024-annual-database-agency-information)
 
 **1. Clone the Repository**
-Bash:
+```bash
 git clone [https://github.com/brvmike/National-Transit-Safety-SMS.git](https://github.com/brvmike/National-Transit-Safety-SMS.git)
 cd National-Transit-Safety-SMS
-
 2. Install Dependencies
 Ensure you have Python 3.10 or higher installed. Install the required packages by running:
 
-Bash: 
+Bash
 pip install -r requirements.txt
-
 3. Database Configuration
 This framework relies on Azure SQL. You will need an active Azure SQL Database to host the data.
+
 Open app.py, ingest_ntd_data.py, and train_risk_model.py.
 
 Locate the Cloud Connection sections in each file.
+
 Update the server, database, username, and password variables with your active credentials.
 
 4. Execute the Data Pipeline & ML Model
 Before launching the dashboard, you must ingest the raw federal data and generate the predictive risk scores:
 
-Bash:
+Bash
 python ingest_ntd_data.py
 python train_risk_model.py
-
-
 5. Launch the Dashboard
 Once the database is populated, start the interactive Streamlit application:
 
-Bash:
+Bash
 streamlit run app.py
