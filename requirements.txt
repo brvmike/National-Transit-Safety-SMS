@@ -1,0 +1,10 @@
+streamlit==1.32.0
+pandas==2.2.1
+numpy==1.26.4
+sqlalchemy==2.0.28
+pyodbc==5.1.0
+xgboost==2.0.3
+scikit-learn==1.4.1.post1
+shap==0.45.0
+plotly==5.20.0
+pgeocode==0.3.0
