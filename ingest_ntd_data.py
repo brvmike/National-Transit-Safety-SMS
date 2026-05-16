@@ -29,10 +29,10 @@ engine = create_engine(connection_url)
 
 # --- 2. DATA EXTRACTION & GEOCODING ---
 print("Reading raw NTD CSVs...")
-df_raw = pd.read_csv("C:\\Users\\Brave\\Downloads\\Major_Safety_and_Security_Events_20260514.csv", low_memory=False)
+df_raw = pd.read_csv("C:\\Users\\PATH_TO_DOWNLOADED_FILE\\Major_Safety_and_Security_Events_20260514.csv", low_memory=False)
 
 # Update this path to exactly where your Agency Info file is saved
-df_agency_info = pd.read_csv("C:\\Users\\Brave\\Downloads\\2024 Agency Information_250922.csv", encoding='latin1') 
+df_agency_info = pd.read_csv("C:\\Users\\PATH_TO_DOWNLOADED_FILE\\2024 Agency Information_250922.csv", encoding='latin1') 
 
 print("Merging Geospatial Data...")
 # Extract only the location data we care about
