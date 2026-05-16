@@ -21,10 +21,10 @@ with st.sidebar:
     st.divider()
     st.caption("Active integrations: Azure Logic Apps, Twilio API")
 
-# --- 3. THE ENDEAVOR STATEMENT ---
+# --- 3. Executive Summary ---
 st.title("National Transit Worker Safety Risk Dashboard")
 st.markdown("""
-**Endeavor Statement:** *Engineered in direct response to the Federal Transit Administration’s General Directive 24-1, this open-source AI framework transforms disparate National Transit Database (NTD) records into actionable predictive risk scores. Utilizing XGBoost and SHAP explainable AI, this system provides the Department of Transportation with the infrastructure required to proactively predict and mitigate transit worker fatalities and assaults across the United States.*
+**Executive Summary:** *Engineered in direct response to the Federal Transit Administration’s General Directive 24-1, this open-source AI framework transforms disparate National Transit Database (NTD) records into actionable predictive risk scores. Utilizing XGBoost and SHAP explainable AI, this system provides the Department of Transportation with the infrastructure required to proactively predict and mitigate transit worker fatalities and assaults across the United States.*
 """)
 st.divider()
 
