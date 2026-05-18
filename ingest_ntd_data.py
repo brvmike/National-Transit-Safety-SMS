@@ -44,7 +44,7 @@ try:
     print(f"Successfully ingested {len(df_raw)} incident records from live FTA API.")
 
 except requests.exceptions.RequestException as e:
-    print(f"🚨 Critical Pipeline Error: Failed to connect to FTA API. Details: {e}")
+    print(f" Critical Pipeline Error: Failed to connect to FTA API. Details: {e}")
     exit()
 
 print("Reading static Agency Reference Data...") #Update the path below
