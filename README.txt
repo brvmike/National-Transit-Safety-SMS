@@ -25,10 +25,13 @@ Key Industry-Standard Features
 
 
 The Technical Stack
-* Database: Microsoft Azure SQL (ODBC Driver 18)
-* Data Processing: Pandas, NumPy, SQLAlchemy
-* Machine Learning: XGBoost, Scikit-Learn, SHAP
-* Frontend Visualization: Streamlit, Plotly Express, Plotly Graph Objects
+* Language: Python 3.9+
+* Predictive Modeling: XGBoost Regressor, Scikit-Learn
+* Explainable AI: SHAP (SHapley Additive exPlanations)
+* Data Engineering (ETL): Pandas, NumPy, SQLAlchemy
+* Database Management: Microsoft Azure SQL (via PyODBC)
+* Front-End / UI: Streamlit, Plotly (Geospatial & Time-Series Visualizations)
+* Alerting Integrations: Twilio API, Azure Logic Apps
 
 
 
