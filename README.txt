@@ -12,7 +12,7 @@ This pipeline represents a complete transition from legacy, manual spreadsheet r
 
 1. Data Engineering (ETL): An automated Python pipeline extracts raw safety, security, and geographic data from the federal NTD portal, cleanses it of duplicates and missing fields, and loads it into a relational Azure SQL Database.
 2. Predictive Engine: An XGBoost Regressor trained on historical incident severity (fatalities and injuries) calculates forward-looking risk probabilities based on temporal, environmental, and operational features.
-3.  Public Deployment: A dynamic Streamlit web application provides transit directors with a Tier-1 interactive dashboard for resource allocation.
+3. Public Deployment: A dynamic Streamlit web application provides transit directors with a Tier-1 interactive dashboard for resource allocation.
 
 
 
