@@ -1,5 +1,6 @@
 import pandas as pd
 import pgeocode
+import requests  # <-- Added for the API call
 from sqlalchemy import create_engine
 from sqlalchemy.engine import URL
 
@@ -27,22 +28,67 @@ connection_url = URL.create(
 # Create the engine using the safe URL object
 engine = create_engine(connection_url)
 
-# --- 2. DATA EXTRACTION & GEOCODING ---
-print("Reading raw NTD CSVs...")
-# Update this path to exactly where your Major Events file is saved
-df_raw = pd.read_csv("C:\\Users\\\\Major_Safety_and_Security_Events_20260514.csv", low_memory=False)
+# --- 2. AUTOMATED DATA EXTRACTION & GEOCODING ---
+print("Initiating automated NTD data ingestion via API...")
 
-# Update this path to exactly where your Agency Info file is saved
-df_agency_info = pd.read_csv("C:\\Users\\2024 Agency Information_250922.csv", encoding='latin1') 
+# The active live federal API endpoint for FTA Major Safety Events
+API_ENDPOINT = "https://data.transportation.gov/resource/9ivb-8ae9.json"
+
+try:
+    # Pulling up to 150,000 historical records from the federal server
+    # Set timeout to 30 seconds to allow a larger payload to download completely
+    response = requests.get(API_ENDPOINT, params={"$limit": 150000}, timeout=30)
+    response.raise_for_status()
+    
+    df_raw = pd.DataFrame(response.json())
+    print(f"Successfully ingested {len(df_raw)} incident records from live FTA API.")
+
+except requests.exceptions.RequestException as e:
+    print(f"🚨 Critical Pipeline Error: Failed to connect to FTA API. Details: {e}")
+    exit()
+
+print("Reading static Agency Reference Data...")
+df_agency_info = pd.read_csv(r"C:\Users\Brave\OneDrive\Mikael\Drex\EB-2\National-Transit-Safety-SMS\2024 Agency Information_250922.csv", encoding='latin1') 
+
+# --- Exact Socrata API Column Alignment Mapping ---
+# Maps the live JSON stream keys to match your pipeline's downstream logic
+api_column_map = {
+    '_5_digit_ntd_id': 'NTD ID',
+    'agency': 'Agency',
+    'incident_date': 'Event Date',
+    'event_type': 'Event Type',
+    'location_type': 'Location Type',
+    'mode': 'Mode',
+    'mode_name': 'Mode Name',  # <-- FIXED: Added this line to translate the mode description text
+    'total_fatalities': 'Total Fatalities',
+    'total_injuries': 'Total Injuries',
+    
+    # Fatalities Grouping
+    'transit_vehicle_operator': 'Transit Vehicle Operator Fatalities',
+    'transit_employee_fatalities': 'Non-Operator Transit Employee Fatalities',
+    'other_worker_fatalities': 'Other Worker Fatalities',
+    
+    # Injuries Grouping
+    'transit_vehicle_operator_1': 'Transit Vehicle Operator Injuries',
+    'transit_employee_injuries': 'Non-Operator Transit Employee Injuries',
+    'other_worker_injuries': 'Other Worker Injuries',
+    
+    # Serious Injuries Grouping
+    'transit_vehicle_operator_2': 'Transit Vehicle Operator Serious Injuries',
+    'transit_employee_serious': 'Non-Operator Transit Employee Serious Injuries',
+    'other_worker_serious_injuries': 'Other Worker Serious Injuries'
+}
+
+# Execute the column translation
+df_raw = df_raw.rename(columns=api_column_map)
+# -------------------------------------------------
 
 print("Merging Geospatial Data...")
-# Extract only the location data we care about
 df_locations = df_agency_info[['NTD ID', 'City', 'State', 'Zip Code']].drop_duplicates(subset=['NTD ID'])
 
-# Force both keys to be strings to prevent int64/object mismatch ---
+# Safely force strings for the relational merge
 df_raw['NTD ID'] = df_raw['NTD ID'].astype(str)
 df_locations['NTD ID'] = df_locations['NTD ID'].astype(str)
-# Merge the location data into your main safety pipeline
 df_raw = pd.merge(df_raw, df_locations, on='NTD ID', how='left')
 
 print("Geocoding Zip Codes (This may take a moment)...")
@@ -53,8 +99,23 @@ geo_data = nomi.query_postal_code(df_raw['Clean_Zip'].tolist())
 df_raw['Latitude'] = geo_data.latitude
 df_raw['Longitude'] = geo_data.longitude
 
+
 # --- 3. DATA ENGINEERING & TRANSFORMATION ---
 print("Transforming and cleaning data for national safety analysis...")
+
+# 1. IDENTIFY ALL METRIC COLUMNS
+numeric_cols = [
+    'Total Fatalities', 'Total Injuries',
+    'Transit Vehicle Operator Fatalities', 'Non-Operator Transit Employee Fatalities', 'Other Worker Fatalities',
+    'Transit Vehicle Operator Injuries', 'Non-Operator Transit Employee Injuries', 'Other Worker Injuries',
+    'Transit Vehicle Operator Serious Injuries', 'Non-Operator Transit Employee Serious Injuries', 'Other Worker Serious Injuries'
+]
+
+# 2. EXPLICITLY CAST STRINGS TO NUMBERS
+# This converts API text strings into integers, forcing any missing or bad values to 0
+for col in numeric_cols:
+    if col in df_raw.columns:
+        df_raw[col] = pd.to_numeric(df_raw[col], errors='coerce').fillna(0).astype(int)
 
 # Normalize Agency Data - NOW INCLUDES GEOSPATIAL COLUMNS
 df_agency = df_raw[['NTD ID', 'Agency', 'City', 'State', 'Latitude', 'Longitude']].drop_duplicates(subset=['NTD ID'], keep='first').dropna(subset=['NTD ID'])
@@ -72,13 +133,13 @@ df_fact['IncidentDate'] = pd.to_datetime(df_raw['Event Date'], errors='coerce')
 df_fact['EventType'] = df_raw['Event Type']
 df_fact['LocationDescription'] = df_raw['Location Type'].fillna('Unknown')
 
-# AGGREGATION LOGIC
+# AGGREGATION LOGIC (Math executes on verified integers)
 worker_fatality_cols = [
     'Transit Vehicle Operator Fatalities', 
     'Non-Operator Transit Employee Fatalities', 
     'Other Worker Fatalities'
 ]
-df_fact['WorkerFatalities'] = df_raw[worker_fatality_cols].fillna(0).sum(axis=1)
+df_fact['WorkerFatalities'] = df_raw[worker_fatality_cols].sum(axis=1)
 
 worker_injury_cols = [
     'Transit Vehicle Operator Injuries', 
@@ -88,11 +149,11 @@ worker_injury_cols = [
     'Non-Operator Transit Employee Serious Injuries',
     'Other Worker Serious Injuries'
 ]
-df_fact['WorkerInjuries'] = df_raw[worker_injury_cols].fillna(0).sum(axis=1)
+df_fact['WorkerInjuries'] = df_raw[worker_injury_cols].sum(axis=1)
 
 # Public Impacts (Total minus Workers)
-df_fact['PublicFatalities'] = df_raw['Total Fatalities'].fillna(0) - df_fact['WorkerFatalities']
-df_fact['PublicInjuries'] = df_raw['Total Injuries'].fillna(0) - df_fact['WorkerInjuries']
+df_fact['PublicFatalities'] = df_raw['Total Fatalities'] - df_fact['WorkerFatalities']
+df_fact['PublicInjuries'] = df_raw['Total Injuries'] - df_fact['WorkerInjuries']
 
 # Clean up any bad dates or missing IDs
 df_fact = df_fact.dropna(subset=['IncidentDate', 'NTDID', 'ModeCode'])
