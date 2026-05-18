@@ -28,7 +28,7 @@ st.markdown("""
 st.divider()
 
 # --- 3 METHODOLOGY & INTERPRETATION GUIDE ---
-with st.expander("📖 Methodology & Interpretation Guide (How to Read this Dashboard)"):
+with st.expander("Methodology & Interpretation Guide (How to Read this Dashboard)"):
     st.markdown("""
     ### 1. What is the Predictive Risk Score?
     The score is not a raw probability percentage. It is a **relative risk index** calculated by an XGBoost machine learning model trained on historical National Transit Database (NTD) records. 
@@ -37,9 +37,9 @@ with st.expander("📖 Methodology & Interpretation Guide (How to Read this Dash
     
     ### 2. How are the Scores Interpreted?
     To prevent data skewing from massive outliers, this dashboard automatically converts raw scores into **National Percentiles** to trigger safety alerts:
-    * 🔴 **Critical Risk (Top 5%):** The agency is in the 95th percentile or higher for predicted danger. Requires immediate executive intervention and maximum resource reallocation.
-    * 🟠 **Elevated Risk (Top 25%):** The agency is performing worse than 75% of the country. Requires targeted audits and moderate resource shifting.
-    * 🟢 **Stable (Bottom 75%):** The agency's safety posture aligns with or outperforms the national baseline. 
+    *  **Critical Risk (Top 5%):** The agency is in the 95th percentile or higher for predicted danger. Requires immediate executive intervention and maximum resource reallocation.
+    *  **Elevated Risk (Top 25%):** The agency is performing worse than 75% of the country. Requires targeted audits and moderate resource shifting.
+    *  **Stable (Bottom 75%):** The agency's safety posture aligns with or outperforms the national baseline. 
     
     ### 3. How is the AI Explained? (The Waterfall Chart)
     We utilize **SHAP (SHapley Additive exPlanations)** to eliminate the "black box" of AI. The waterfall chart under the Agency Deep-Dive tab breaks down exactly *why* an agency received its score. It starts at the national baseline and adds or subtracts points based on specific operational drivers (e.g., Worker Fatigue, Recent Assault Trends, Environmental Hazards). 
@@ -80,7 +80,7 @@ df = load_data()
 
 # ---5. SIDEBAR: AGENCY SELECTION ---
 with st.sidebar:
-    st.header("🔍 Agency Search")
+    st.header(" Agency Search")
     st.markdown("Select a transit authority to view its predictive SMS profile.")
     selected_agency = st.selectbox(
         "Filter by Specific Agency:", 
@@ -107,20 +107,20 @@ col3.metric("Agencies at 'Critical' Risk", critical_count, delta="Immediate Acti
 agency_risk = df.groupby('AgencyName')['PredictedWorkerRiskScore'].max().reset_index()
 csv_data = agency_risk.to_csv(index=False).encode('utf-8')
 st.download_button(
-    label="📥 Export National Risk Data to CSV",
+    label=" Export National Risk Data to CSV",
     data=csv_data,
     file_name='fta_national_risk_scores.csv',
     mime='text/csv',
 )
 
 if critical_count > 0:
-    with st.expander(f"🚨 View Details: Click here to reveal the {critical_count} Critical Risk Agencies"):
+    with st.expander(f"View Details: Click here to reveal the {critical_count} Critical Risk Agencies"):
         critical_display = critical_df.groupby('AgencyName')['PredictedWorkerRiskScore'].max().reset_index()
         st.dataframe(critical_display.sort_values(by='PredictedWorkerRiskScore', ascending=False), width='stretch', hide_index=True)
 
 # --- 7. THE INTERACTIVE GEOSPATIAL MAP ---
 st.divider()
-st.subheader("🗺️ Geospatial Risk Distribution")
+st.subheader("Geospatial Risk Distribution")
 
 # Build map_df directly from the master 'df', NOT 'agency_risk'
 map_df = df.dropna(subset=['Latitude', 'Longitude'])
@@ -255,17 +255,17 @@ if selected_agency:
             dynamic_time_window = f"{start_hour:02d}:00 - {end_hour:02d}:00"
             
             if primary_driver == "Recent Assault Trends":
-                alert_func(f"🚨 **[{threat_level}] Command Recommendation:** Redeploy **{dynamic_patrol_pct}%** of active transit police patrols to high-volume rail hubs during peak incident hours (**{dynamic_time_window}**). Increase visible staff presence at isolated platforms.")
+                alert_func(f" **[{threat_level}] Command Recommendation:** Redeploy **{dynamic_patrol_pct}%** of active transit police patrols to high-volume rail hubs during peak incident hours (**{dynamic_time_window}**). Increase visible staff presence at isolated platforms.")
             elif primary_driver == "Worker Fatigue Indicators":
-                alert_func(f"⚠️ **[{threat_level}] Command Recommendation:** Audit operator scheduling. Enforce mandatory minimum rest periods between shifts and temporarily suspend voluntary overtime for operators flagged in the top **{dynamic_audit_pct}%** of hours worked.")
+                alert_func(f" **[{threat_level}] Command Recommendation:** Audit operator scheduling. Enforce mandatory minimum rest periods between shifts and temporarily suspend voluntary overtime for operators flagged in the top **{dynamic_audit_pct}%** of hours worked.")
             elif primary_driver == "Environmental/Location Risk":
-                alert_func(f"⚠️ **[{threat_level}] Command Recommendation:** Dispatch rapid-response maintenance crews to address flagged right-of-way hazards and upgrade lighting/security infrastructure at top-tier incident locations.")
+                alert_func(f" **[{threat_level}] Command Recommendation:** Dispatch rapid-response maintenance crews to address flagged right-of-way hazards and upgrade lighting/security infrastructure at top-tier incident locations.")
         else:
-            st.success("✅ **Command Recommendation:** Current safety posture is effective. Maintain existing resource allocation and continue standard monitoring protocols.")
+            st.success(" **Command Recommendation:** Current safety posture is effective. Maintain existing resource allocation and continue standard monitoring protocols.")
 
 # This 'else' aligns with the main 'if selected_agency:' at the top of Section 9
 else:
-    st.info("👈 Please select an agency from the search menu in the left sidebar to view its Predictive Risk Profile.")
+    st.info(" Please select an agency from the search menu in the left sidebar to view its Predictive Risk Profile.")
 
 # --- 10. SYSTEM ADMIN ALERTS ---
 with st.expander("⚙️ System Admin: Configure SMS/Email Alerts"):
