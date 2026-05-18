@@ -58,8 +58,8 @@ def load_data():
     """
     server = 'transit-safety-server-xyz.database.windows.net'
     database = 'TransitSafetyDB'
-    username = 'YOUR_USERNAME' # Update this!
-    password = 'YOUR_PASSWORD' # Update this!
+    username = 'brvmike' # Update this!
+    password = 'Bravemike08#' # Update this!
     
     connection_url = URL.create(
         "mssql+pyodbc", username=username, password=password, host=server, database=database,
@@ -232,7 +232,7 @@ if selected_agency:
         st.markdown("#### AI-Driven Prescriptive Interventions")
         st.markdown("Based on the primary SHAP drivers, the system prescribes the following immediate resource reallocations to mitigate projected risk:")
         
-        # Dynamic scaling using statistical percentiles instead of raw scores
+        # UPGRADED: Dynamic scaling using statistical percentiles instead of raw scores
         percentile = (agency_risk['PredictedWorkerRiskScore'] < agency_score).mean() * 100
         
         if percentile >= 75: # Only trigger warnings for the top 25% of agencies
@@ -262,8 +262,10 @@ if selected_agency:
                 alert_func(f"⚠️ **[{threat_level}] Command Recommendation:** Dispatch rapid-response maintenance crews to address flagged right-of-way hazards and upgrade lighting/security infrastructure at top-tier incident locations.")
         else:
             st.success("✅ **Command Recommendation:** Current safety posture is effective. Maintain existing resource allocation and continue standard monitoring protocols.")
+
+# This 'else' aligns with the main 'if selected_agency:' at the top of Section 9
 else:
-    st.info("👆 Please select an agency from the dropdown above to view its Predictive Risk Profile.")
+    st.info("👈 Please select an agency from the search menu in the left sidebar to view its Predictive Risk Profile.")
 
 # --- 10. SYSTEM ADMIN ALERTS ---
 with st.expander("⚙️ System Admin: Configure SMS/Email Alerts"):
