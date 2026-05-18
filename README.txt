@@ -42,34 +42,43 @@ Repository Structure
 Federal Compliance & Impact
 This repository demonstrates a scalable framework that allows mid-to-large-sized transit agencies to comply with federal data-driven safety mandates without requiring massive internal data engineering departments. It establishes a transparent, adoptable national standard for predictive transit safety.
 
-
 Local Installation & Execution
 To replicate this environment locally for independent review or regional adoption, please follow these steps:
 
-0. Acquire Raw Federal Data
-Download the latest *Agency Information* master file from the Federal Transit Administration NTD Data Portal. Place the `.csv` file directly into the root directory of this project:
-* [2024 Annual Database Agency Information](https://www.transit.dot.gov/ntd/data-product/2024-annual-database-agency-information)
-
-1. Clone this Repository
+1. Clone the Repository
+Bash:
 git clone [https://github.com/brvmike/National-Transit-Safety-SMS.git](https://github.com/brvmike/National-Transit-Safety-SMS.git)
 cd National-Transit-Safety-SMS
 
-2. Install Dependencies
-Ensure you have Python 3.10 or higher installed. Install the required packages by running:
+2. Configure Local Reference Data
+The pipeline automatically streams live incident logs from the federal API, but relies on a local master reference file for regional geographic anchoring.
+Create a folder named data in the project root directory.
+Download the 2024 Annual Database Agency Information CSV.
+Save it inside your new folder and name it exactly: data/2024_Agency_Information.csv
+
+3. Install Dependencies
+Ensure you have Python 3.10 or higher installed. Install the required runtime packages by running:
+Bash:
 pip install -r requirements.txt
 
-3. Database Configuration
-This framework relies on Azure SQL. You will need an active Azure SQL Database to host the data.
-Open app.py, ingest_ntd_data.py, and train_risk_model.py.
+4. Database Configuration
+This framework relies on Azure SQL. You will need an active Azure SQL Database instance to host the relational schemas.
+Open app.py, ingest_ntd_data.py, and train_risk_model.py, locate the Cloud Connection blocks, and input your active server credentials:
 
-Locate the Cloud Connection sections in each file.
-Update the server, database, username, and password variables with your active credentials.
+Python
+server = 'your-transit-server.database.windows.net'
+database = 'TransitSafetyDB'
+username = 'your_username'
+password = 'your_password'
 
-4. Execute the Data Pipeline & ML Model
-Before launching the dashboard, you must ingest the raw federal data and generate the predictive risk scores:
+5. Execute the Ingestion Pipeline & ML Engine
+Run the automated pipeline to pull down the live 111k+ federal records, clean the types, map schemas, and train the predictive engine:
+
+Bash:
 python ingest_ntd_data.py
 python train_risk_model.py
 
-5. Launch the Dashboard
-Once the database is populated, start the interactive Streamlit application:
+6. Launch the Dashboard
+Once your cloud database is fully initialized and populated, launch the interactive Streamlit application:
+Bash:
 streamlit run app.py
