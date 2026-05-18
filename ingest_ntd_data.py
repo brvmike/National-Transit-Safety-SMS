@@ -1,6 +1,6 @@
 import pandas as pd
 import pgeocode
-import requests  # <-- Added for the API call
+import requests  # <-- for the API call
 from sqlalchemy import create_engine
 from sqlalchemy.engine import URL
 
@@ -47,8 +47,8 @@ except requests.exceptions.RequestException as e:
     print(f"🚨 Critical Pipeline Error: Failed to connect to FTA API. Details: {e}")
     exit()
 
-print("Reading static Agency Reference Data...")
-df_agency_info = pd.read_csv(r"C:\Users\Brave\OneDrive\Mikael\Drex\EB-2\National-Transit-Safety-SMS\2024 Agency Information_250922.csv", encoding='latin1') 
+print("Reading static Agency Reference Data...") #Update the path below
+df_agency_info = pd.read_csv(r"C:\Users\2024 Agency Information_250922.csv", encoding='latin1') 
 
 # --- Exact Socrata API Column Alignment Mapping ---
 # Maps the live JSON stream keys to match your pipeline's downstream logic
