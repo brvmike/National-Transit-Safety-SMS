@@ -6,8 +6,8 @@ from sqlalchemy.engine import URL
 # --- 1. CLOUD CONNECTION SETUP ---
 server = 'transit-safety-server-xyz.database.windows.net'
 database = 'TransitSafetyDB'
-username = 'YOUR_USERNAME'
-password = 'YOUR_PASSWORD'
+username = 'YOUR_USERNAME' # Update this!
+password = 'YOUR_PASSWORD' # Update this!
 
 # Using SQLAlchemy's URL builder prevents string parsing errors
 connection_url = URL.create(
@@ -29,16 +29,17 @@ engine = create_engine(connection_url)
 
 # --- 2. DATA EXTRACTION & GEOCODING ---
 print("Reading raw NTD CSVs...")
-df_raw = pd.read_csv("C:\\Users\\PATH_TO_DOWNLOADED_FILE\\Major_Safety_and_Security_Events_20260514.csv", low_memory=False)
+# Update this path to exactly where your Major Events file is saved
+df_raw = pd.read_csv("C:\\Users\\\\Major_Safety_and_Security_Events_20260514.csv", low_memory=False)
 
 # Update this path to exactly where your Agency Info file is saved
-df_agency_info = pd.read_csv("C:\\Users\\PATH_TO_DOWNLOADED_FILE\\2024 Agency Information_250922.csv", encoding='latin1') 
+df_agency_info = pd.read_csv("C:\\Users\\2024 Agency Information_250922.csv", encoding='latin1') 
 
 print("Merging Geospatial Data...")
 # Extract only the location data we care about
 df_locations = df_agency_info[['NTD ID', 'City', 'State', 'Zip Code']].drop_duplicates(subset=['NTD ID'])
 
-# --- THE FIX: Force both keys to be strings to prevent int64/object mismatch ---
+# Force both keys to be strings to prevent int64/object mismatch ---
 df_raw['NTD ID'] = df_raw['NTD ID'].astype(str)
 df_locations['NTD ID'] = df_locations['NTD ID'].astype(str)
 # Merge the location data into your main safety pipeline
@@ -99,7 +100,7 @@ df_fact = df_fact.dropna(subset=['IncidentDate', 'NTDID', 'ModeCode'])
 # --- 4. DATA LOADING (The "L" in ETL) ---
 print("Uploading Dimensions to Azure...")
 
-# --- THE FIX: Generate the ID columns dynamically in Python ---
+# --- Generate the ID columns dynamically in Python ---
 df_agency.insert(0, 'AgencyID', range(1, 1 + len(df_agency)))
 df_mode.insert(0, 'ModeID', range(1, 1 + len(df_mode)))
 # --------------------------------------------------------------
