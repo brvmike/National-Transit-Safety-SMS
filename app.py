@@ -58,8 +58,8 @@ def load_data():
     """
     server = 'transit-safety-server-xyz.database.windows.net'
     database = 'TransitSafetyDB'
-    username = 'brvmike' # Update this!
-    password = 'Bravemike08#' # Update this!
+    username = 'YOUR_USERNAME' # Update this!
+    password = 'YOUR_PASSWORD' # Update this!
     
     connection_url = URL.create(
         "mssql+pyodbc", username=username, password=password, host=server, database=database,
